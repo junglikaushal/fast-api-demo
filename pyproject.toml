@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "bcrypt>=5.0.0",
+    "beautifulsoup4>=4.15.0",
     "fastapi>=0.140.7",
     "httpx2>=2.9.1",
     "passlib>=1.7.4",
@@ -13,6 +14,7 @@ dependencies = [
     "pytest>=9.1.1",
     "python-jose>=3.5.0",
     "python-multipart>=0.0.32",
+    "requests>=2.34.2",
     "sqlalchemy>=2.0.51",
     "typing>=3.10.0.0",
     "uvicorn>=0.51.0",
