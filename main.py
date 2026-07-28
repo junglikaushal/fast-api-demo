@@ -1,6 +1,7 @@
+from typing import Any
+
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
 
 app = FastAPI()
 
@@ -11,7 +12,7 @@ class Book(BaseModel):
     author: str
 
 
-books: List[Book] = []
+books: list[Book] = []
 
 
 @app.get("/")
@@ -22,6 +23,16 @@ def root():
 @app.get("/books")
 def get_books():
     return books
+
+
+@app.get("/books/search")
+def search_book(query: str):
+    result = [
+        book
+        for book in books
+        if query.lower() in book.title.lower() or query.lower() in book.author.lower()
+    ]
+    return result
 
 
 @app.get("/books/{book_id}")
@@ -38,15 +49,6 @@ def create_book(book: Book):
     return book
 
 
-@app.put("/books/{book_id}")
-def update_book(book_id: int, updated_book: Book):
-    for index, book in enumerate(books):
-        if book.id == book_id:
-            books[index] = updated_book
-            return updated_book
-    return {"error": "Book not found"}
-
-
 @app.delete("/books/{book_id}")
 def delete_book(book_id: int):
     for index, book in enumerate(books):
@@ -54,3 +56,8 @@ def delete_book(book_id: int):
             deleted_book = books.pop(index)
             return deleted_book
     return {"error": "Book not found"}
+
+
+@app.get("/test")
+def test(query: Any):
+    return {"message": f"This is a test endpoint. Query: {query}"}
