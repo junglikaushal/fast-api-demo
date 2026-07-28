@@ -10,6 +10,14 @@ class Book(BaseModel):
     id: int
     title: str
     author: str
+    address: "Address"
+
+
+class Address(BaseModel):
+    street: str
+    city: str
+    state: str
+    zip_code: str
 
 
 books: list[Book] = []
