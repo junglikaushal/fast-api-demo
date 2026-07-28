@@ -1,6 +1,7 @@
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -45,13 +46,13 @@ def search_book(query: str):
 
 @app.get("/books/{book_id}")
 def get_book(book_id: int):
-    for index, book in enumerate(books):
+    for book in books:
         if book.id == book_id:
             return book
-    return {"error": "Book not found"}
+    return HTTPException(status_code=404, detail="Book not found")
 
 
-@app.post("/books")
+@app.post("/books", status_code=status.HTTP_201_CREATED)
 def create_book(book: Book):
     books.append(book)
     return book
@@ -69,3 +70,23 @@ def delete_book(book_id: int):
 @app.get("/test")
 def test(query: Any):
     return {"message": f"This is a test endpoint. Query: {query}"}
+
+
+class UserNotFoundException(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+
+@app.exception_handler(UserNotFoundException)
+def user_not_found_exception_handler(request: Request, exc: UserNotFoundException):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"message": f"User '{exc.name}' not found."},
+    )
+
+
+@app.get("/users/{name}")
+def get_user(name: str):
+    if name != "kaushal":
+        raise UserNotFoundException(name=name)
+    return {"name": "kaushal", "message": "User found!"}
