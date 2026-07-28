@@ -1,6 +1,7 @@
+import time
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -90,3 +91,32 @@ def get_user(name: str):
     if name != "kaushal":
         raise UserNotFoundException(name=name)
     return {"name": "kaushal", "message": "User found!"}
+
+
+def verify_token(token: str = Header(None)):
+    if token != "mysecrettoken":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing token",
+        )
+
+
+@app.middleware("http")
+async def log_middleware(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    print(
+        f"Request: {request.method} {request.url.path} completed in {process_time:.4f} seconds"
+    )
+    return response
+
+
+@app.get("/profile")
+def home(user=Depends(verify_token)):
+    return {"message": "Welcome to the profile page!"}
+
+
+@app.get("/dashboard")
+def dashboard(user=Depends(verify_token)):
+    return user
