@@ -5,8 +5,12 @@ description = "Learning FastAPI"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "bcrypt>=5.0.0",
     "fastapi>=0.140.7",
+    "passlib>=1.7.4",
     "pymysql>=1.2.0",
+    "python-jose>=3.5.0",
+    "python-multipart>=0.0.32",
     "sqlalchemy>=2.0.51",
     "typing>=3.10.0.0",
     "uvicorn>=0.51.0",
